@@ -22,8 +22,10 @@ export const userLogin = async (req: Request, res: Response) => {
         username
       }
     });
-    if (findUser && await compare(password, findUser.password)) {
-      const token = await sign(findUser, 'Scerect');
+      if (findUser && await compare(password, findUser.password)) {
+        console.log(findUser)
+          const token = await sign({ username : findUser.username,password : findUser.password}, 'Scerect');
+        console.log(token)
     } else console.log('Not found User');
   } catch (err) {
     console.log(err);
