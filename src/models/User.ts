@@ -1,6 +1,6 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/sequelize';
-import { hash } from 'bcrypt';
+import { hashSync } from 'bcrypt';
 const User = sequelize.define('User', {
   id: {
     type: DataTypes.INTEGER,
@@ -23,6 +23,9 @@ const User = sequelize.define('User', {
       len: {
         args: [ 7, 14 ],
         msg: 'Password length between 7 & 14 char',
+      },
+      set(this: any, value: any) {
+        this.setDataValue('password', hashSync(value, 10));
       }
     }
   },
@@ -31,10 +34,9 @@ const User = sequelize.define('User', {
     values: [ 'principal', 'teacher', 'student' ],
     allowNull: false,
   },
-});
-
-User.afterValidate(async (user: any) => {
-  user.password = await hash(user.password, 10);
+  token: {
+    type: DataTypes.STRING,
+  }
 });
 
 export default User;
