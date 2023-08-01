@@ -23,7 +23,6 @@ export const addSchedule = async (req:Request, res:Response, next:NextFunction) 
 };
 
 export const viewLecture =async (req:Request,res:Response, next:NextFunction) => {
-  // console.log(Object.keys(req.query).length)
   try {
     if (!(Object.keys(req.query).length)) {
       const date = new Date();
