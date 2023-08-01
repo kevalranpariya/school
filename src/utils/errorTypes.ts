@@ -3,5 +3,5 @@ export default {
   forbidden: 'forbidden',
   unauthorized: 'unauthorized',
   bad_request: 'bad_request',
-  validation: 'validation' || 'SequelizeUniqueConstraintError'
+  validation: 'validation',
 };

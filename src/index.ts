@@ -2,11 +2,9 @@ import express ,{ Express,urlencoded } from 'express';
 import { config } from 'dotenv';
 import route from './routes/index';
 import './config/sequelize';
-import './models/User';
 import errorHandling from './middleware/errorHandling';
 import './middleware/auth';
 import passport from 'passport';
-import './models/Attendance';
 
 config();
 const server:Express = express();

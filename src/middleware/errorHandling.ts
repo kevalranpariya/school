@@ -22,11 +22,10 @@ export default (err: any, req: Request, res: Response, next: any) => {
       err.statusCode = statusCode.NOT_FOUND;
       return errorResponse(err, req, res);
     case errorTypes.validation:
-      err.statusCode = statusCode.NOT_FOUND;
+      err.statusCode = statusCode.BAD_REQUEST;
       return errorResponse(err, req, res);
     default:
       err.statusCode = statusCode.BAD_REQUEST;
-      console.log(err.message);
       return errorResponse(err, req, res);
       next(err);
   }

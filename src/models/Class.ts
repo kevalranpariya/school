@@ -26,10 +26,10 @@ User.hasMany(Class, {
   onDelete: 'CASCADE',
 });
 
-Class.beforeCreate(async (value:any) => {
+Class.beforeValidate(async (value:any) => {
   const findUser: any = await User.findByPk(value.teacher_id);
   if (findUser?.role === 'teacher') {
-    value.save();
+    return;
   } else throw new errHelper(errorTypes.not_found, 'Teacher not found');
 });
 export default Class;
