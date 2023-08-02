@@ -1,7 +1,16 @@
-import { DataTypes } from 'sequelize';
+import { DataTypes, Model } from 'sequelize';
 import sequelize from '../config/sequelize';
 import { hashSync } from 'bcrypt';
-const User = sequelize.define('User', {
+
+interface UserInterface extends Model {
+  id: number,
+  username: string,
+  password: string,
+  role: 'principal' | 'teacher' | 'student',
+  token: string | null
+}
+
+const User = sequelize.define<UserInterface>('User', {
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,

@@ -1,8 +1,14 @@
-import { DataTypes } from 'sequelize';
+import { DataTypes, Model } from 'sequelize';
 import sequelize from '../config/sequelize';
 import User from './User';
 
-const Attendance = sequelize.define('Attendance', {
+interface AttendanceInterface extends Model{
+  id: number,
+  date: Date,
+  status: 'present' | 'absent'
+}
+
+const Attendance = sequelize.define<AttendanceInterface>('Attendance', {
   id: {
     type: DataTypes.INTEGER,
     allowNull: false,

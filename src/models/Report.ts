@@ -1,10 +1,17 @@
-import { DataTypes } from 'sequelize';
+import { DataTypes, Model } from 'sequelize';
 import sequelize from '../config/sequelize';
 import User from './User';
 import errHelper from '../utils/errorHelper';
 import errorTypes from '../utils/errorTypes';
 
-const Report = sequelize.define('Report', {
+interface ReportInterfaces extends Model{
+  id: number,
+  description: string,
+  teacher_id: number,
+  student_id: number
+}
+
+const Report = sequelize.define<ReportInterfaces>('Report', {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,

@@ -4,6 +4,13 @@ import User from '../models/User';
 import errHelper from '../utils/errorHelper';
 import errorTypes from '../utils/errorTypes';
 
+interface findUserInterface{
+  id: number,
+  username: string,
+  role: string,
+  token: string | null
+}
+
 passport.use(new Strategy({
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
   secretOrKey: 'Scercet',
@@ -11,10 +18,10 @@ passport.use(new Strategy({
 }, async (req:any,user:any, done:VerifiedCallback) => {
   try {
     const { id } = user;
-    const findUser:any = await User.findByPk(id, {
-      attributes: [ 'id', 'username', 'role','token' ],
-    });
-    const { token } = findUser;
+    const findUser = await User.findByPk(id, {
+      attributes: [ 'id', 'username', 'role', 'token' ],
+    }) as findUserInterface;
+    const token = findUser?.token;
     const bearerToken = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
     if (bearerToken == token) {
       return done(null, findUser);
@@ -27,21 +34,5 @@ passport.use(new Strategy({
   }
 }));
 
-passport.serializeUser(async (user:any, done:VerifiedCallback) => {
-  try {
-    return done(null, user.id);
-  } catch (err) {
-    return done(err, false);
-  }
-});
-
-passport.deserializeUser(async (id:number,done:VerifiedCallback) => {
-  try {
-    const findUser:any = await User.findByPk(id);
-    return done(null,findUser);
-  } catch (err) {
-    return done(err, false);
-  }
-});
 
 export default passport;

@@ -1,11 +1,17 @@
-import { DataTypes } from 'sequelize';
+import { DataTypes, Model } from 'sequelize';
 import sequelize from '../config/sequelize';
 import Class from './Class';
 import User from './User';
 import errHelper from '../utils/errorHelper';
 import errorTypes from '../utils/errorTypes';
 
-const ClassStudent = sequelize.define('ClassStudent', {
+interface ClassStudentInterface extends Model{
+  id: number,
+  class_id: number,
+  student_id:number
+}
+
+const ClassStudent = sequelize.define<ClassStudentInterface>('ClassStudent', {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,

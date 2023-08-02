@@ -1,10 +1,17 @@
-import { DataTypes } from 'sequelize';
+import { DataTypes, Model } from 'sequelize';
 import sequelize from '../config/sequelize';
 import Class from './Class';
 import errHelper from '../utils/errorHelper';
 import errorTypes from '../utils/errorTypes';
 
-const Schedule = sequelize.define('Schedule', {
+interface ScheduleInterface extends Model{
+  id: number,
+  weekday: string,
+  time: string,
+  date: string
+}
+
+const Schedule = sequelize.define<ScheduleInterface>('Schedule', {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -23,6 +30,11 @@ const Schedule = sequelize.define('Schedule', {
     type: DataTypes.STRING,
     allowNull: false,
   }
+}, {
+  indexes: [{
+    unique: true,
+    fields: [ 'date', 'time','class_id' ],
+  }]
 });
 
 Class.hasMany(Schedule, {

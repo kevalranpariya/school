@@ -8,7 +8,7 @@ import passport from 'passport';
 
 config();
 const server:Express = express();
-server.use(urlencoded());
+server.use(urlencoded({extended : true}));
 server.use(passport.initialize());
 server.use(route);
 
