@@ -5,7 +5,8 @@ import User from './User';
 interface AttendanceInterface extends Model{
   id: number,
   date: Date,
-  status: 'present' | 'absent'
+  status: 'present' | 'absent',
+  student_id: number
 }
 
 const Attendance = sequelize.define<AttendanceInterface>('Attendance', {

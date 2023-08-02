@@ -1,6 +1,6 @@
 import statusCode from '../constant/statusCode';
 import errorTypes from '../utils/errorTypes';
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 const errorResponse = (err:any, req: Request, res: Response) => {
   return res.status(err.statusCode).json({
     statusCode: err.statusCode,
@@ -8,7 +8,7 @@ const errorResponse = (err:any, req: Request, res: Response) => {
   });
 };
 
-export default (err: any, req: Request, res: Response, next: any) => {
+export default (err: any, req: Request, res: Response, next: NextFunction) => {
   switch (err.name) {
     case errorTypes.bad_request:
       err.statusCode = statusCode.BAD_REQUEST;

@@ -7,7 +7,8 @@ import errorTypes from '../utils/errorTypes';
 interface ClassInterface extends Model{
   id: number,
   name: string,
-  grade:string
+  grade: string,
+  teacher_id: number
 }
 
 const Class = sequelize.define<ClassInterface>('Class', {
@@ -24,6 +25,13 @@ const Class = sequelize.define<ClassInterface>('Class', {
   grade: {
     type: DataTypes.STRING(30),
     allowNull: false
+  },
+  teacher_id: {
+    type: DataTypes.INTEGER,
+    unique: {
+      'name': '',
+      'msg': 'This teacher already assign'
+    }
   }
 });
 
@@ -32,8 +40,8 @@ User.hasMany(Class, {
   onDelete: 'CASCADE',
 });
 
-Class.beforeValidate(async (value:any) => {
-  const findUser: any = await User.findByPk(value.teacher_id);
+Class.beforeValidate(async value => {
+  const findUser = await User.findByPk(value.teacher_id);
   if (findUser?.role === 'teacher') {
     return;
   } else throw new errHelper(errorTypes.not_found, 'Teacher not found');

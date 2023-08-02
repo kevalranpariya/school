@@ -1,4 +1,4 @@
-import { Response, Request } from 'express';
+import { Response, Request, NextFunction } from 'express';
 import User from '../models/User';
 import { compare } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
@@ -6,21 +6,19 @@ import { SUCCESS } from '../middleware/responseHandling';
 import errHelper from '../utils/errorHelper';
 import errorTypes from '../utils/errorTypes';
 
-export const userRegister = async (req: Request, res: Response,next:any) => {
+export const userRegister = async (req: Request, res: Response,next:NextFunction) => {
   try {
     const userCreate = await User.create(req.body);
-    res.status(200).json({
-      userCreate
-    });
+    return SUCCESS(req, res, userCreate);
   } catch (err) {
     return next(err);
   }
 };
 
-export const userLogin = async (req: Request, res: Response,next:any) => {
+export const userLogin = async (req: Request, res: Response,next:NextFunction) => {
   try {
     const { username, password } = req.body;
-    const findUser:any = await User.findOne({
+    const findUser = await User.findOne({
       where: {
         username
       }

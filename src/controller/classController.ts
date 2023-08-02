@@ -4,7 +4,7 @@ import { SUCCESS } from '../middleware/responseHandling';
 import errHelper from '../utils/errorHelper';
 import errorTypes from '../utils/errorTypes';
 import ClassStudent from '../models/ClassStudent';
-export const addClass = async (req: Request, res: Response, next: any) => {
+export const addClass = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const createClass = await Class.create(req.body);
     SUCCESS(req, res, createClass);
@@ -13,15 +13,14 @@ export const addClass = async (req: Request, res: Response, next: any) => {
   }
 };
 
-export const removeClass = async(req: Request, res: Response, next: any) => {
+export const removeClass = async(req: Request, res: Response, next: NextFunction) => {
   try {
-    const id = req.params.id;
+    const id: number = Number(req.params.id);
     const findClass = await Class.findByPk(id);
     if (findClass) {
       await Class.destroy({
         where: { id }
       });
-
       return SUCCESS(req, res,);
     } else throw new errHelper(errorTypes.not_found, 'Class not found');
   } catch (err) {
@@ -31,10 +30,10 @@ export const removeClass = async(req: Request, res: Response, next: any) => {
 
 export const addStudent =async (req:Request,res:Response,next:NextFunction) => {
   try {
-    const { class_id }:any = req.body;
-    const { id }: any = req.user;
-    const findClass: any = await Class.findByPk(class_id);
-    if (!(findClass.teacher_id === id)) {
+    const { class_id } = req.body;
+    const { id } = req.user;
+    const findClass = await Class.findByPk(class_id);
+    if (!(findClass?.teacher_id === id)) {
       throw new errHelper(errorTypes.forbidden, 'Can not access this class');
     }
     const assignStudent = await ClassStudent.create(req.body);
@@ -46,9 +45,9 @@ export const addStudent =async (req:Request,res:Response,next:NextFunction) => {
 
 export const removeStudent =async (req:Request, res:Response, next:NextFunction) => {
   try {
-    const ClassStudentID: any = req.params.id;
-    const { id }: any = req.user;
-    const findClass: any = await ClassStudent.findByPk(ClassStudentID, {
+    const ClassStudentID:number = Number(req.params.id);
+    const { id } = req.user;
+    const findClass = await ClassStudent.findByPk(ClassStudentID, {
       include: {
         model: Class,
         attributes: ['teacher_id']

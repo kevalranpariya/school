@@ -6,6 +6,7 @@ import errHelper from '../utils/errorHelper';
 import errorTypes from '../utils/errorTypes';
 
 interface ClassStudentInterface extends Model{
+  [x: string]: any;
   id: number,
   class_id: number,
   student_id:number
@@ -56,8 +57,8 @@ ClassStudent.belongsTo(User, {
   foreignKey: 'student_id'
 });
 
-ClassStudent.beforeValidate(async (value: any) => {
-  const findUser: any = await User.findByPk(value.student_id);
+ClassStudent.beforeValidate(async value => {
+  const findUser = await User.findByPk(value.student_id);
   if (findUser?.role === 'student') {
     return;
   } else throw new errHelper(errorTypes.not_found, 'Student not found');

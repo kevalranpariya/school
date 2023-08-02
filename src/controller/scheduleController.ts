@@ -1,4 +1,4 @@
-import { Request, Response,NextFunction } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { SUCCESS } from '../middleware/responseHandling';
 import Schedule from '../models/Schedule';
 import Class from '../models/Class';
@@ -6,11 +6,11 @@ import errHelper from '../utils/errorHelper';
 import errorTypes from '../utils/errorTypes';
 import ClassStudent from '../models/ClassStudent';
 
-export const addSchedule = async (req:Request, res:Response, next:NextFunction) => {
+export const addSchedule = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { class_id } = req.body;
-    const { id }: any = req.user;
-    const findClass:any = await Class.findByPk(class_id);
+    const { id } = req.user;
+    const findClass = await Class.findByPk(class_id);
     if (!(findClass?.teacher_id === id)) {
       throw new errHelper(errorTypes.forbidden, 'Can not access this class');
     }
@@ -22,14 +22,14 @@ export const addSchedule = async (req:Request, res:Response, next:NextFunction) 
   }
 };
 
-export const viewLecture =async (req:Request,res:Response, next:NextFunction) => {
+export const viewLecture = async (req: Request, res: Response, next: NextFunction) => {
   try {
     if (!(Object.keys(req.query).length)) {
       const date = new Date();
       req.query.date = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
     }
-    const { id }:any = req.user;
-    const findClassStudent: any = await ClassStudent.findOne({
+    const { id } = req.user;
+    const findClassStudent = await ClassStudent.findOne({
       where: {
         student_id: id,
       },

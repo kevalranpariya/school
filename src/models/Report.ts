@@ -49,8 +49,8 @@ User.hasMany(Report, {
   foreignKey: 'student_id'
 });
 
-Report.beforeValidate(async (value: any) => {
-  const findUser: any = await User.findByPk(value.student_id);
+Report.beforeValidate(async value => {
+  const findUser = await User.findByPk(value.student_id);
   if (findUser?.role === 'student') {
     return;
   } else throw new errHelper(errorTypes.not_found, 'Student not found');

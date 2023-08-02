@@ -33,7 +33,7 @@ const User = sequelize.define<UserInterface>('User', {
         args: [ 7, 14 ],
         msg: 'Password length between 7 & 14 char',
       },
-      set(this: any, value: any) {
+      set(this: any, value: string) {
         this.setDataValue('password', hashSync(value, 10));
       }
     }

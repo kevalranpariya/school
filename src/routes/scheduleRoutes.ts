@@ -6,6 +6,6 @@ const route = Router();
 
 route.post('/addSchedule', checkUserRole(['teacher']), scheduleController.addSchedule);
 
-route.get('/viewLecture', checkUserRole(['student']), scheduleController.viewLecture);
+route.get('/viewLecture', scheduleController.viewLecture);
 
 export default route;
