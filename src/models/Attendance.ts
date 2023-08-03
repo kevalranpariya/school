@@ -17,14 +17,14 @@ const Attendance = sequelize.define<AttendanceInterface>('Attendance', {
     autoIncrement: true
   },
   date: {
-    type: DataTypes.DATEONLY,
+    type: DataTypes.STRING,
     defaultValue: DataTypes.NOW,
   },
   status: {
     type: DataTypes.ENUM,
     values: [
       'present',
-      'absent'
+      'absent',
     ]
   }
 }, {

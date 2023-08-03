@@ -38,7 +38,39 @@ export const viewRecord = async (req: Request, res: Response, next: NextFunction
         student_id: id
       }
     });
-    return SUCCESS(req,res,findAttendance);
+    return SUCCESS(req, res, findAttendance);
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const viewAttendance =async (req:Request,res:Response,next:NextFunction) => {
+  try {
+    const findAllAttendance = await Attendance.findAll({});
+    SUCCESS(req,res,findAllAttendance);
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const updateAttendance = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.user;
+    const { student_id } = req.body;
+    // const findClassStudent = await ClassStudent.findOne({
+    //   where: {
+    //     student_id: student_id
+    //   },
+    //   attributes: ['class_id'],
+    //   include: {
+    //     model: Class,
+    //     attributes: ['teacher_id']
+    //   }
+    // });
+    const findAttendance = await Attendance.findByPk();
+    const classTeacherId: number = findClassStudent?.Class?.teacher_id;
+    if (!(classTeacherId == id)) throw new errHelper(errorTypes.forbidden, 'Can not access this Student!!');
+    SUCCESS(req, res, findClassStudent);
   } catch (err) {
     return next(err);
   }

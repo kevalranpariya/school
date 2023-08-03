@@ -17,7 +17,9 @@ export default (err: any, req: Request, res: Response, next: NextFunction) => {
     case errorTypes.unauthorized:
       err.statusCode = statusCode.UNAUTHORIZED;
       return errorResponse(err, req, res);
-
+    case errorTypes.forbidden:
+      err.statusCode = statusCode.FORBIDDEN;
+      return errorResponse(err, req, res);
     case errorTypes.not_found:
       err.statusCode = statusCode.NOT_FOUND;
       return errorResponse(err, req, res);

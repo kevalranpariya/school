@@ -41,7 +41,7 @@ User.hasMany(Class, {
 });
 
 Class.beforeValidate(async value => {
-  const findUser = await User.findByPk(value.teacher_id);
+  const findUser = await User.findByPk(value?.teacher_id);
   if (findUser?.role === 'teacher') {
     return;
   } else throw new errHelper(errorTypes.not_found, 'Teacher not found');

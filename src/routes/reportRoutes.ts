@@ -6,6 +6,8 @@ const route = Router();
 
 route.post('/addReport', checkUserRole(['teacher']), reportController.addReport);
 
-route.get('/viewReport',checkUserRole(['principal']), reportController.viewReport);
+route.get('/viewReport', checkUserRole(['principal']), reportController.viewReport);
+
+route.put('/updateReport/:id', checkUserRole(['teacher']), reportController.updateReport);
 
 export default route;

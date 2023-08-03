@@ -8,4 +8,8 @@ route.post('/addRecord', checkUserRole(['teacher']), attendanceController.addRec
 
 route.get('/viewRecord', checkUserRole(['student']), attendanceController.viewRecord);
 
+route.get('/viewAttendance', checkUserRole(['principal']), attendanceController.viewAttendance);
+
+route.put('/updateAttendance/:id', checkUserRole(['teacher']), attendanceController.updateAttendance)
+
 export default route;

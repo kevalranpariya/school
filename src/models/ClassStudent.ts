@@ -31,7 +31,7 @@ const ClassStudent = sequelize.define<ClassStudentInterface>('ClassStudent', {
     type: DataTypes.INTEGER,
     allowNull: false,
     unique: {
-      name: '',
+      name: 'StudentUniqueConstraint',
       msg: 'This student already assign a class',
     },
     references: {
@@ -59,9 +59,9 @@ ClassStudent.belongsTo(User, {
 
 ClassStudent.beforeValidate(async value => {
   const findUser = await User.findByPk(value.student_id);
-  if (findUser?.role === 'student') {
-    return;
-  } else throw new errHelper(errorTypes.not_found, 'Student not found');
+  const findClass = await Class.findByPk(value.class_id);
+  if (!findClass) throw new errHelper(errorTypes.not_found, 'Class not found');
+  if (findUser?.role !== 'student')throw new errHelper(errorTypes.not_found, 'Student not found');
 });
 
 export default ClassStudent;

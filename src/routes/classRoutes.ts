@@ -9,7 +9,10 @@ route.post('/addClass', checkUserRole(['principal']),classController.addClass);
 
 route.delete('/removeClass/:id', checkUserRole(['principal']), classController.removeClass);
 
-route.post('/addStudent', checkUserRole([ 'principal','teacher' ]), classController.addStudent);
+route.post('/addStudent', checkUserRole(['teacher']), classController.addStudent);
+
+route.put('/updateStudentClass/:id', checkUserRole(['teacher']), classController.updateStudentClass);
 
 route.delete('/removeStudent/:id', checkUserRole(['teacher']), classController.removeStudent);
+
 export default route;

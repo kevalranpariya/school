@@ -49,3 +49,23 @@ export const viewLecture = async (req: Request, res: Response, next: NextFunctio
     return next(err);
   }
 };
+
+export const classSchedule = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    if (!(Object.keys(req.query).length)) {
+      const date = new Date();
+      req.query.date = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+    }
+    const findDate = req.query.date;
+    console.log(findDate, 'ds');
+    const findSchedule = await Schedule.findAll({
+      where: {
+        date: findDate
+      }
+    });
+    if (findSchedule.length) return SUCCESS(req, res, findSchedule);
+    else throw new errHelper(errorTypes.not_found, 'Schedule not found');
+  } catch (err) {
+    return next(err);
+  }
+};

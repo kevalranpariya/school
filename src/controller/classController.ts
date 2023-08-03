@@ -1,9 +1,10 @@
-import { Request, Response,NextFunction } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import Class from '../models/Class';
 import { SUCCESS } from '../middleware/responseHandling';
 import errHelper from '../utils/errorHelper';
 import errorTypes from '../utils/errorTypes';
 import ClassStudent from '../models/ClassStudent';
+
 export const addClass = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const createClass = await Class.create(req.body);
@@ -13,7 +14,7 @@ export const addClass = async (req: Request, res: Response, next: NextFunction) 
   }
 };
 
-export const removeClass = async(req: Request, res: Response, next: NextFunction) => {
+export const removeClass = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const id: number = Number(req.params.id);
     const findClass = await Class.findByPk(id);
@@ -28,7 +29,7 @@ export const removeClass = async(req: Request, res: Response, next: NextFunction
   }
 };
 
-export const addStudent =async (req:Request,res:Response,next:NextFunction) => {
+export const addStudent = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { class_id } = req.body;
     const { id } = req.user;
@@ -38,15 +39,14 @@ export const addStudent =async (req:Request,res:Response,next:NextFunction) => {
     }
     const assignStudent = await ClassStudent.create(req.body);
     return SUCCESS(req, res, assignStudent);
-
   } catch (err) {
     return next(err);
   }
 };
 
-export const removeStudent =async (req:Request, res:Response, next:NextFunction) => {
+export const removeStudent = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const ClassStudentID:number = Number(req.params.id);
+    const ClassStudentID: number = Number(req.params.id);
     const { id } = req.user;
     const findClass = await ClassStudent.findByPk(ClassStudentID, {
       include: {
@@ -62,6 +62,23 @@ export const removeStudent =async (req:Request, res:Response, next:NextFunction)
       where: {
         id: ClassStudentID
       }
+    });
+    return SUCCESS(req, res);
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const updateStudentClass = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { class_id } = req.body;
+    const { id } = req.user;
+    const findClass = await Class.findByPk(class_id);
+    if (!(findClass?.teacher_id === id)) {
+      throw new errHelper(errorTypes.forbidden, 'Can not access this class');
+    }
+    await ClassStudent.update(req.body, {
+      where: { id: req.params.id }
     });
     return SUCCESS(req, res);
   } catch (err) {
