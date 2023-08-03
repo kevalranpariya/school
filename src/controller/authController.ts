@@ -24,19 +24,12 @@ export const userLogin = async (req: Request, res: Response,next:NextFunction) =
       }
     });
     if (findUser && await compare(password, findUser.password)) {
-      const token = sign({
-        id: findUser.id,
-        username: findUser.username,
-        role: findUser.role
-      }, 'Scercet');
-      await User.update({ token: token }, {
-        where: {
-          id: findUser.id,
-        }
-      });
+      const { id,username,role } = findUser;
+      const token = sign({ id, username, role }, 'justInfoSECRET');
+      findUser.token = token;
+      await findUser.save();
       return SUCCESS(req, res, token);
     } else throw new errHelper(errorTypes.not_found,'User data & Password not found');
-
   } catch (err) {
     return next(err);
   }

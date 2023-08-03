@@ -4,23 +4,15 @@ import User from '../models/User';
 import errHelper from '../utils/errorHelper';
 import errorTypes from '../utils/errorTypes';
 
-// interface findUserInterface{
-//   id: number,
-//   username: string,
-//   role: string,
-//   token: string | null
-// }
-
 interface UserInterface {
   id: number,
   username: string,
   role: 'principal' | 'teacher' | 'student',
   token: string | null
 }
-
 passport.use(new Strategy({
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-  secretOrKey: 'Scercet',
+  secretOrKey: 'justInfoSECRET',
   passReqToCallback: true
 }, async (req: any, user: UserInterface, done: VerifiedCallback) => {
   try {

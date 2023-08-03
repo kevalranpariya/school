@@ -38,6 +38,7 @@ export const addStudent =async (req:Request,res:Response,next:NextFunction) => {
     }
     const assignStudent = await ClassStudent.create(req.body);
     return SUCCESS(req, res, assignStudent);
+
   } catch (err) {
     return next(err);
   }

@@ -8,7 +8,7 @@ export default (allowedRoles: string[]) => (req: Request, res: Response, next: N
     if (req.user && allowedRoles.includes(role)) {
       next();
     } else {
-      throw new errHelper(errorTypes.not_found, 'Forbidden. Insufficient role access.');
+      throw new errHelper(errorTypes.forbidden, 'Insufficient role access.');
     }
   } catch (err) {
     return next(err);
