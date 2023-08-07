@@ -6,7 +6,7 @@ import errHelper from '../utils/errorHelper';
 import errorTypes from '../utils/errorTypes';
 
 interface ClassStudentInterface extends Model{
-  [x: string]: any;
+  // [x: string]: any;
   id: number,
   class_id: number,
   student_id:number
@@ -54,7 +54,8 @@ User.hasMany(ClassStudent, {
 });
 
 ClassStudent.belongsTo(User, {
-  foreignKey: 'student_id'
+  foreignKey: 'student_id',
+  as: 'Student'
 });
 
 ClassStudent.beforeValidate(async value => {

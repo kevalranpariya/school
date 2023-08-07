@@ -29,22 +29,48 @@ export const viewLecture = async (req: Request, res: Response, next: NextFunctio
       req.query.date = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
     }
     const { id } = req.user;
-    const findClassStudent = await ClassStudent.findOne({
+    const findSchedule = await ClassStudent.findOne({
       where: {
-        student_id: id,
+        student_id: id
+      },
+      include: {
+        model: Schedule,
+        where: {
+          date: req.query.date
+        }
+      }
+    });
+    if (!findSchedule) throw new errHelper(errorTypes.not_found, 'Schedule not found');
+    return SUCCESS(req, res, findSchedule);
+
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const updateSchedule = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { class_id } = req.body;
+    const { id } = req.user;
+    const findSchedule = await Schedule.findByPk(req.params.id, {
+      include: {
+        model: Class,
+        attributes: ['teacher_id'],
+        where: {
+          teacher_id: id
+        }
       },
       attributes: ['class_id']
     });
-    const findClass = findClassStudent?.class_id;
-    const findDate = req.query.date;
-    const findSchedule = await Schedule.findAll({
+    if (!findSchedule) throw new errHelper(errorTypes.forbidden, 'Can not access this schedule');
+    const findClass = await Class.findByPk(class_id);
+    if (!(findClass?.teacher_id == id)) throw new errHelper(errorTypes.forbidden, 'Can not access this class');
+    await Schedule.update(req.body, {
       where: {
-        date: findDate,
-        class_id: findClass
+        id: req.params.id
       }
     });
-    if (findSchedule.length) return SUCCESS(req, res, findSchedule);
-    else throw new errHelper(errorTypes.not_found, 'Schedule not found');
+    return SUCCESS(req, res);
   } catch (err) {
     return next(err);
   }
@@ -52,19 +78,71 @@ export const viewLecture = async (req: Request, res: Response, next: NextFunctio
 
 export const classSchedule = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    if (!(Object.keys(req.query).length)) {
-      const date = new Date();
-      req.query.date = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+    if (!req.query.date) {
+      const NewDate = new Date();
+      req.query.date = `${NewDate.getFullYear()}-${NewDate.getMonth() + 1}-${NewDate.getDate()}`;
     }
-    const findDate = req.query.date;
-    console.log(findDate, 'ds');
-    const findSchedule = await Schedule.findAll({
+    const { date } = req.query;
+    const { class_id } = req.query;
+    const findSchedule = await ClassStudent.findOne({
       where: {
-        date: findDate
+        class_id: class_id
+      },
+      attributes: ['class_id'],
+      include: {
+        model: Schedule,
+        where: {
+          date: date
+        }
       }
     });
-    if (findSchedule.length) return SUCCESS(req, res, findSchedule);
-    else throw new errHelper(errorTypes.not_found, 'Schedule not found');
+    if (!findSchedule) throw new errHelper(errorTypes.not_found, 'Schedule not found');
+    return SUCCESS(req, res, findSchedule);
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const deleteSchedule = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.user;
+    const findSchedule = await Schedule.findByPk(req.params.id, {
+      include: {
+        model: Class,
+        attributes: ['teacher_id'],
+        where: {
+          teacher_id: id
+        }
+      },
+      attributes: ['class_id']
+    });
+    if (!(findSchedule)) throw new errHelper(errorTypes.forbidden, 'Can not access this schedule');
+
+    await Schedule.destroy({
+      where: {
+        id: req.params.id
+      }
+    });
+    return SUCCESS(req, res);
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const teacherClassSchedule = async (req:Request,res:Response,next:NextFunction) => {
+  try {
+    const { id } = req.user;
+    const findSchedule = await Schedule.findAll({
+      include: {
+        model: Class,
+        where: {
+          teacher_id: id
+        },
+        attributes: []
+      }
+    });
+    if (!findSchedule.length) throw new errHelper(errorTypes.not_found, 'Today has no lectures');
+    return SUCCESS(req, res, findSchedule);
   } catch (err) {
     return next(err);
   }

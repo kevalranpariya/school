@@ -40,6 +40,11 @@ User.hasMany(Class, {
   onDelete: 'CASCADE',
 });
 
+Class.belongsTo(User, {
+  foreignKey: 'teacher_id',
+  as: 'Teacher'
+});
+
 Class.beforeValidate(async value => {
   const findUser = await User.findByPk(value?.teacher_id);
   if (findUser?.role === 'teacher') {

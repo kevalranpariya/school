@@ -3,13 +3,16 @@ import sequelize from '../config/sequelize';
 import Class from './Class';
 import errHelper from '../utils/errorHelper';
 import errorTypes from '../utils/errorTypes';
+import ClassStudent from './ClassStudent';
+import Attendance from './Attendance';
 
 interface ScheduleInterface extends Model{
   id: number,
   weekday: string,
   time: string,
   date: string,
-  class_id:number
+  class_id: number,
+  Class : any
 }
 
 const Schedule = sequelize.define<ScheduleInterface>('Schedule', {
@@ -39,7 +42,21 @@ const Schedule = sequelize.define<ScheduleInterface>('Schedule', {
 });
 
 Class.hasMany(Schedule, {
+  foreignKey: 'class_id',
+});
+
+Schedule.belongsTo(Class, {
   foreignKey: 'class_id'
+});
+
+ClassStudent.hasMany(Schedule, {
+  foreignKey: 'class_id',
+  sourceKey: 'class_id'
+});
+
+ClassStudent.hasMany(Attendance, {
+  foreignKey: 'student_id',
+  sourceKey: 'student_id'
 });
 
 Schedule.beforeValidate(async value => {

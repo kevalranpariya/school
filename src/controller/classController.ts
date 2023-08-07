@@ -4,6 +4,7 @@ import { SUCCESS } from '../middleware/responseHandling';
 import errHelper from '../utils/errorHelper';
 import errorTypes from '../utils/errorTypes';
 import ClassStudent from '../models/ClassStudent';
+import User from '../models/User';
 
 export const addClass = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -29,6 +30,23 @@ export const removeClass = async (req: Request, res: Response, next: NextFunctio
   }
 };
 
+export const classUpdate = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+    const findClass = await Class.findByPk(id);
+    if (!findClass) throw new errHelper(errorTypes.not_found, 'Class not found');
+
+    await Class.update(req.body, {
+      where: {
+        id
+      }
+    });
+    return SUCCESS(req, res);
+  } catch (err) {
+    return next(err);
+  }
+};
+
 export const addStudent = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { class_id } = req.body;
@@ -51,12 +69,14 @@ export const removeStudent = async (req: Request, res: Response, next: NextFunct
     const findClass = await ClassStudent.findByPk(ClassStudentID, {
       include: {
         model: Class,
-        attributes: ['teacher_id']
+        attributes: ['teacher_id'],
+        where: {
+          teacher_id: id
+        }
       },
       attributes: ['id']
     });
-    const classTeacherId: number = findClass?.Class.teacher_id;
-    if (!(classTeacherId == id)) throw new errHelper(errorTypes.forbidden, 'Can not access this class');
+    if (!findClass) throw new errHelper(errorTypes.forbidden, 'Can not access this class');
 
     await ClassStudent.destroy({
       where: {
@@ -81,6 +101,47 @@ export const updateStudentClass = async (req: Request, res: Response, next: Next
       where: { id: req.params.id }
     });
     return SUCCESS(req, res);
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const allClass = async (req:Request,res:Response,next:NextFunction) => {
+  try {
+    const findAllClass = await Class.findAll({
+      include: {
+        model: User,
+        as: 'Teacher',
+        attributes: [ 'id','username' ]
+      }
+    });
+    return SUCCESS(req,res,findAllClass);
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const allStudentClass = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.user;
+    const findClassStudent = await ClassStudent.findAll({
+      attributes: ['class_id'],
+      include: [
+        {
+          model: Class,
+          where: {
+            teacher_id: id
+          },
+          attributes: []
+        },
+        {
+          model: User,
+          as: 'Student',
+          attributes: [ 'id', 'username' ]
+        }
+      ]
+    });
+    return SUCCESS(req, res, findClassStudent);
   } catch (err) {
     return next(err);
   }

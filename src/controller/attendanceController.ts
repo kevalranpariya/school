@@ -18,11 +18,13 @@ export const addRecord = async (req: Request, res: Response, next: any) => {
       attributes: ['class_id'],
       include: {
         model: Class,
-        attributes: ['teacher_id']
+        attributes: ['teacher_id'],
+        where: {
+          teacher_id: id
+        }
       }
     });
-    const classTeacherId: number = findClassStudent?.Class?.teacher_id;
-    if (!(classTeacherId == id)) throw new errHelper(errorTypes.forbidden, 'Can not access this Student!!');
+    if (!findClassStudent) throw new errHelper(errorTypes.forbidden, 'Can not access this Student!!');
     const addRecord = await Attendance.create(req.body);
     return SUCCESS(req, res, addRecord);
   } catch (err) {
@@ -46,8 +48,26 @@ export const viewRecord = async (req: Request, res: Response, next: NextFunction
 
 export const viewAttendance =async (req:Request,res:Response,next:NextFunction) => {
   try {
-    const findAllAttendance = await Attendance.findAll({});
-    SUCCESS(req,res,findAllAttendance);
+    if (!req.query.date) {
+      const NewDate = new Date();
+      req.query.date = `${NewDate.getFullYear()}-${NewDate.getMonth() + 1}-${NewDate.getDate()}`;
+    }
+    const { date } = req.query;
+    const { class_id } = req.query;
+    const findSchedule = await ClassStudent.findAll({
+      where: {
+        class_id: class_id
+      },
+      attributes: ['student_id'],
+      include: {
+        model: Attendance,
+        where: {
+          date: date
+        }
+      }
+    });
+    if (!findSchedule) throw new errHelper(errorTypes.not_found, 'Schedule not found');
+    return SUCCESS(req, res, findSchedule);
   } catch (err) {
     return next(err);
   }
@@ -57,20 +77,84 @@ export const updateAttendance = async (req: Request, res: Response, next: NextFu
   try {
     const { id } = req.user;
     const { student_id } = req.body;
-    // const findClassStudent = await ClassStudent.findOne({
-    //   where: {
-    //     student_id: student_id
-    //   },
-    //   attributes: ['class_id'],
-    //   include: {
-    //     model: Class,
-    //     attributes: ['teacher_id']
-    //   }
-    // });
-    const findAttendance = await Attendance.findByPk();
-    const classTeacherId: number = findClassStudent?.Class?.teacher_id;
-    if (!(classTeacherId == id)) throw new errHelper(errorTypes.forbidden, 'Can not access this Student!!');
-    SUCCESS(req, res, findClassStudent);
+    const findAttendance = await Attendance.findByPk(req.params.id);
+    if (!findAttendance) throw new errHelper(errorTypes.not_found, 'Attendance not found');
+    const findClassStudent = await ClassStudent.findOne({
+      where: {
+        student_id: student_id
+      },
+      attributes: ['class_id'],
+      include: {
+        model: Class,
+        attributes: ['teacher_id'],
+        where: {
+          teacher_id: id
+        }
+      }
+    });
+    if (!findClassStudent) throw new errHelper(errorTypes.forbidden, 'Can not access this Student!!');
+
+    await Attendance.update(req.body, {
+      where: {
+        id: req.params.id
+      }
+    });
+    return SUCCESS(req, res);
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const deleteRecord =async (req:Request,res:Response,next:NextFunction) => {
+  try {
+    const { id } = req.user;
+    const findTeacher = await Attendance.findByPk(req.params.id);
+    const findStudentID = findTeacher?.student_id;
+
+    const findClassStudent = await ClassStudent.findOne({
+      where: {
+        student_id: findStudentID
+      },
+      attributes: ['class_id'],
+      include: {
+        model: Class,
+        attributes: ['teacher_id'],
+        where: {
+          teacher_id: id
+        }
+      }
+    });
+    if (!findClassStudent) throw new errHelper(errorTypes.forbidden, 'Can not access this Student!!');
+
+    await Attendance.destroy({
+      where: {
+        id: req.params.id
+      }
+    });
+    return SUCCESS(req, res);
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const viewTeacherAttendance = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.user;
+    const findAllAttendance = await ClassStudent.findAll({
+      attributes: ['student_id'],
+      include: [
+        {
+          model: Class,
+          where: {
+            teacher_id: id
+          },
+          attributes: []
+        },
+        { model: Attendance },
+      ]
+    });
+    if (!findAllAttendance.length) throw new errHelper(errorTypes.not_found, 'Attendance not found');
+    return SUCCESS(req, res, findAllAttendance);
   } catch (err) {
     return next(err);
   }

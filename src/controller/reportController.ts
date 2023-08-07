@@ -3,6 +3,7 @@ import Report from '../models/Report';
 import { SUCCESS } from '../middleware/responseHandling';
 import errHelper from '../utils/errorHelper';
 import errorTypes from '../utils/errorTypes';
+
 export const addReport = async (req: Request, res:Response, next:NextFunction) => {
   try {
     const { id } = req.user;
@@ -34,6 +35,23 @@ export const updateReport =async (req:Request,res:Response,next:NextFunction) =>
         id: req.params.id
       },
       returning: true
+    });
+    return SUCCESS(req, res);
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const deleteReport = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.user;
+    const findTeacher = await Report.findByPk(req.params.id);
+    if (!(findTeacher?.teacher_id == id)) throw new errHelper(errorTypes.forbidden, 'Can not access this report');
+
+    await Report.destroy({
+      where: {
+        id: req.params.id
+      }
     });
     return SUCCESS(req, res);
   } catch (err) {

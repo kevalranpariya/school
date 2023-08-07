@@ -10,4 +10,6 @@ route.get('/viewReport', checkUserRole(['principal']), reportController.viewRepo
 
 route.put('/updateReport/:id', checkUserRole(['teacher']), reportController.updateReport);
 
+route.delete('/deleteReport/:id', checkUserRole(['teacher']), reportController.deleteReport);
+
 export default route;
