@@ -48,11 +48,7 @@ export const viewRecord = async (req: Request, res: Response, next: NextFunction
 
 export const viewAttendance =async (req:Request,res:Response,next:NextFunction) => {
   try {
-    if (!req.query.date) {
-      const NewDate = new Date();
-      req.query.date = `${NewDate.getFullYear()}-${NewDate.getMonth() + 1}-${NewDate.getDate()}`;
-    }
-    const { date } = req.query;
+    const date = req.query.date || new Date().toISOString().split('T')[0];
     const { class_id } = req.query;
     const findSchedule = await ClassStudent.findAll({
       where: {
@@ -66,7 +62,7 @@ export const viewAttendance =async (req:Request,res:Response,next:NextFunction) 
         }
       }
     });
-    if (!findSchedule) throw new errHelper(errorTypes.not_found, 'Schedule not found');
+    if (!findSchedule.length) throw new errHelper(errorTypes.not_found, 'Schedule not found');
     return SUCCESS(req, res, findSchedule);
   } catch (err) {
     return next(err);

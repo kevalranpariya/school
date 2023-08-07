@@ -24,10 +24,7 @@ export const addSchedule = async (req: Request, res: Response, next: NextFunctio
 
 export const viewLecture = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    if (!(Object.keys(req.query).length)) {
-      const date = new Date();
-      req.query.date = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
-    }
+    const date = req.query.date || new Date().toISOString().split('T')[0];
     const { id } = req.user;
     const findSchedule = await ClassStudent.findOne({
       where: {
@@ -36,7 +33,7 @@ export const viewLecture = async (req: Request, res: Response, next: NextFunctio
       include: {
         model: Schedule,
         where: {
-          date: req.query.date
+          date: date
         }
       }
     });
@@ -78,11 +75,7 @@ export const updateSchedule = async (req: Request, res: Response, next: NextFunc
 
 export const classSchedule = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    if (!req.query.date) {
-      const NewDate = new Date();
-      req.query.date = `${NewDate.getFullYear()}-${NewDate.getMonth() + 1}-${NewDate.getDate()}`;
-    }
-    const { date } = req.query;
+    const date = req.query.date || new Date().toISOString().split('T')[0];
     const { class_id } = req.query;
     const findSchedule = await ClassStudent.findOne({
       where: {
