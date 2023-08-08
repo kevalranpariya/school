@@ -48,22 +48,19 @@ export const viewRecord = async (req: Request, res: Response, next: NextFunction
 
 export const viewAttendance =async (req:Request,res:Response,next:NextFunction) => {
   try {
-    const date = req.query.date || new Date().toISOString().split('T')[0];
-    const { class_id } = req.query;
-    const findSchedule = await ClassStudent.findAll({
-      where: {
-        class_id: class_id
-      },
-      attributes: ['student_id'],
-      include: {
-        model: Attendance,
-        where: {
-          date: date
+    const findAllAttendance = await Class.findAll({
+      include: [
+        {
+          model: ClassStudent,
+          as: 'Students',
+          include: [
+            Attendance
+          ]
         }
-      }
+      ]
     });
-    if (!findSchedule.length) throw new errHelper(errorTypes.not_found, 'Schedule not found');
-    return SUCCESS(req, res, findSchedule);
+    if (!findAllAttendance.length) throw new errHelper(errorTypes.not_found, 'Schedule not found');
+    return SUCCESS(req, res, findAllAttendance);
   } catch (err) {
     return next(err);
   }

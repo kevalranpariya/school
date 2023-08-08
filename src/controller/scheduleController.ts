@@ -75,22 +75,15 @@ export const updateSchedule = async (req: Request, res: Response, next: NextFunc
 
 export const classSchedule = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const date = req.query.date || new Date().toISOString().split('T')[0];
-    const { class_id } = req.query;
-    const findSchedule = await ClassStudent.findOne({
-      where: {
-        class_id: class_id
-      },
-      attributes: ['class_id'],
-      include: {
-        model: Schedule,
-        where: {
-          date: date
+    const findAllSchedule = await Class.findAll({
+      include: [
+        {
+          model: Schedule
         }
-      }
+      ]
     });
-    if (!findSchedule) throw new errHelper(errorTypes.not_found, 'Schedule not found');
-    return SUCCESS(req, res, findSchedule);
+    if (!findAllSchedule.length) throw new errHelper(errorTypes.not_found, 'Schedule not found');
+    return SUCCESS(req, res, findAllSchedule);
   } catch (err) {
     return next(err);
   }

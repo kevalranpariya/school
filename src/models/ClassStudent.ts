@@ -42,7 +42,9 @@ const ClassStudent = sequelize.define<ClassStudentInterface>('ClassStudent', {
 });
 
 Class.hasMany(ClassStudent, {
-  foreignKey: 'class_id'
+  foreignKey: 'class_id',
+  sourceKey: 'id',
+  as: 'Students'
 });
 
 ClassStudent.belongsTo(Class, {

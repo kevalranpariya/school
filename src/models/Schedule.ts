@@ -43,6 +43,7 @@ const Schedule = sequelize.define<ScheduleInterface>('Schedule', {
 
 Class.hasMany(Schedule, {
   foreignKey: 'class_id',
+  sourceKey: 'id'
 });
 
 Schedule.belongsTo(Class, {
