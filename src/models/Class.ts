@@ -3,6 +3,8 @@ import sequelize from '../config/sequelize';
 import User from './User';
 import errHelper from '../utils/errorHelper';
 import errorTypes from '../utils/errorTypes';
+import { notAssignMessage, notFoundMessage } from '../utils/printMessage';
+import { role } from '../constant/role';
 
 interface ClassInterface extends Model{
   id: number,
@@ -30,7 +32,7 @@ const Class = sequelize.define<ClassInterface>('Class', {
     type: DataTypes.INTEGER,
     unique: {
       'name': '',
-      'msg': 'This teacher already assign'
+      'msg': notAssignMessage('teacher')
     }
   }
 });
@@ -47,8 +49,8 @@ Class.belongsTo(User, {
 
 Class.beforeValidate(async value => {
   const findUser = await User.findByPk(value?.teacher_id);
-  if (findUser?.role === 'teacher') {
+  if (findUser?.role === role.TEACHER) {
     return;
-  } else throw new errHelper(errorTypes.not_found, 'Teacher not found');
+  } else throw new errHelper(errorTypes.not_found, notFoundMessage('Teacher'));
 });
 export default Class;

@@ -3,6 +3,8 @@ import sequelize from '../config/sequelize';
 import User from './User';
 import errHelper from '../utils/errorHelper';
 import errorTypes from '../utils/errorTypes';
+import { notFoundMessage } from '../utils/printMessage';
+import { role } from '../constant/role';
 
 interface ReportInterfaces extends Model{
   id: number,
@@ -51,9 +53,9 @@ User.hasMany(Report, {
 
 Report.beforeValidate(async value => {
   const findUser = await User.findByPk(value.student_id);
-  if (findUser?.role === 'student') {
+  if (findUser?.role === role.STUDENT) {
     return;
-  } else throw new errHelper(errorTypes.not_found, 'Student not found');
+  } else throw new errHelper(errorTypes.not_found, notFoundMessage('Student'));
 });
 
 export default Report;

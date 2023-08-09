@@ -5,6 +5,7 @@ import errHelper from '../utils/errorHelper';
 import errorTypes from '../utils/errorTypes';
 import ClassStudent from './ClassStudent';
 import Attendance from './Attendance';
+import { notFoundMessage } from '../utils/printMessage';
 
 interface ScheduleInterface extends Model{
   id: number,
@@ -64,7 +65,7 @@ Schedule.beforeValidate(async value => {
   const findClass = await Class.findByPk(value.class_id);
   if (findClass) {
     return;
-  } else throw new errHelper(errorTypes.not_found, 'Class not found');
+  } else throw new errHelper(errorTypes.not_found, notFoundMessage('Class'));
 });
 
 export default Schedule;

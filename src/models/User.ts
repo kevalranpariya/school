@@ -1,6 +1,8 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../config/sequelize';
 import { hashSync } from 'bcrypt';
+import { passwordLengthMessage, usernameUniqueMessage } from '../utils/printMessage';
+import { role } from '../constant/role';
 
 interface UserInterface extends Model {
   id: number,
@@ -21,7 +23,7 @@ const User = sequelize.define<UserInterface>('User', {
     type: DataTypes.STRING(50),
     unique: {
       name: '',
-      msg: 'Username must be unique',
+      msg: usernameUniqueMessage,
     },
     allowNull: false,
   },
@@ -31,7 +33,7 @@ const User = sequelize.define<UserInterface>('User', {
     validate: {
       len: {
         args: [ 7, 14 ],
-        msg: 'Password length between 7 & 14 char',
+        msg: passwordLengthMessage,
       },
       set(this: any, value: string) {
         this.setDataValue('password', hashSync(value, 10));
@@ -40,7 +42,7 @@ const User = sequelize.define<UserInterface>('User', {
   },
   role: {
     type: DataTypes.ENUM,
-    values: [ 'principal', 'teacher', 'student' ],
+    values: [ role.PRINCIPAL, role.TEACHER, role.STUDENT ],
     allowNull: false,
   },
   token: {

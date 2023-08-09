@@ -4,6 +4,8 @@ import Class from './Class';
 import User from './User';
 import errHelper from '../utils/errorHelper';
 import errorTypes from '../utils/errorTypes';
+import { notAssignMessage, notFoundMessage } from '../utils/printMessage';
+import { role } from '../constant/role';
 
 interface ClassStudentInterface extends Model{
   // [x: string]: any;
@@ -32,7 +34,7 @@ const ClassStudent = sequelize.define<ClassStudentInterface>('ClassStudent', {
     allowNull: false,
     unique: {
       name: 'StudentUniqueConstraint',
-      msg: 'This student already assign a class',
+      msg: notAssignMessage('student')
     },
     references: {
       model: User,
@@ -63,8 +65,8 @@ ClassStudent.belongsTo(User, {
 ClassStudent.beforeValidate(async value => {
   const findUser = await User.findByPk(value.student_id);
   const findClass = await Class.findByPk(value.class_id);
-  if (!findClass) throw new errHelper(errorTypes.not_found, 'Class not found');
-  if (findUser?.role !== 'student')throw new errHelper(errorTypes.not_found, 'Student not found');
+  if (!findClass) throw new errHelper(errorTypes.not_found, notFoundMessage('Class'));
+  if (findUser?.role !== role.STUDENT)throw new errHelper(errorTypes.not_found, notFoundMessage('Student'));
 });
 
 export default ClassStudent;

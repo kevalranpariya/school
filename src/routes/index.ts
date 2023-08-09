@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response, Router } from 'express';
+import { NextFunction, Request, Response, Router,Express } from 'express';
 import authRoutes from './authRoutes';
 import classRoutes from './classRoutes';
 import attendanceRoutes from './attendanceRoutes';
@@ -7,25 +7,23 @@ import reportRoutes from './reportRoutes';
 import passport from 'passport';
 import errHelper from '../utils/errorHelper';
 import errorTypes from '../utils/errorTypes';
+import { endpoint } from '../constant/endpoint';
 
-const route = Router();
+export function initRoutes(app: Express) {
+  app.use('/', authRoutes(Router()));
+  app.use(endpoint.CLASS, passport.authenticate('jwt', { session: false }), classRoutes(Router()));
 
-route.use('/', authRoutes);
+  app.use(endpoint.REPORT, passport.authenticate('jwt', { session: false }), reportRoutes(Router()));
 
-route.use('/class', passport.authenticate('jwt', { session: false }), classRoutes);
+  app.use(endpoint.ATTENDANCE, passport.authenticate('jwt', { session: false }), attendanceRoutes(Router()));
 
-route.use('/attendance', passport.authenticate('jwt', { session: false }), attendanceRoutes);
+  app.use(endpoint.SCHEDULE, passport.authenticate('jwt', { session: false }), scheduleRoutes(Router()));
 
-route.use('/schedule', passport.authenticate('jwt', { session: false }), scheduleRoutes);
-
-route.use('/report', passport.authenticate('jwt', { session: false }), reportRoutes);
-
-route.all('*', (req:Request, res:Response,next:NextFunction) => {
-  try {
-    throw new errHelper(errorTypes.not_found, 'URL not found');
-  } catch (err) {
-    return next(err);
-  }
-});
-
-export default route;
+  app.all('*', (req: Request, res: Response, next: NextFunction) => {
+    try {
+      throw new errHelper(errorTypes.not_found, 'URL not found');
+    } catch (err) {
+      return next(err);
+    }
+  });
+};

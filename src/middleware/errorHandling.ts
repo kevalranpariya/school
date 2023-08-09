@@ -13,7 +13,6 @@ export default (err: any, req: Request, res: Response, next: NextFunction) => {
     case errorTypes.bad_request:
       err.statusCode = statusCode.BAD_REQUEST;
       return errorResponse(err, req, res);
-
     case errorTypes.unauthorized:
       err.statusCode = statusCode.UNAUTHORIZED;
       return errorResponse(err, req, res);

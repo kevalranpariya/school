@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import errHelper from '../utils/errorHelper';
 import errorTypes from '../utils/errorTypes';
+import { notAccessMessage } from '../utils/printMessage';
 
 export default (allowedRoles: string[]) => (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -8,7 +9,7 @@ export default (allowedRoles: string[]) => (req: Request, res: Response, next: N
     if (req.user && allowedRoles.includes(role)) {
       next();
     } else {
-      throw new errHelper(errorTypes.forbidden, 'You are not accessible.');
+      throw new errHelper(errorTypes.forbidden, notAccessMessage('URL'));
     }
   } catch (err) {
     return next(err);

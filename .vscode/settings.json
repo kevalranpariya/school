@@ -11,5 +11,6 @@
     "prettier.singleAttributePerLine": true,
     "cSpell.autoFormatConfigFile": false,
     "editor.formatOnType": true,
-    "editor.defaultFormatter": "vscode.typescript-language-features"
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    "eslint.format.enable": true,
 }
